@@ -47,5 +47,6 @@
         public const uint SURGERY = 1042;
         public const uint MULTITOOLS = 1043;
         public const uint PDA = 1044;
+        public const uint LUDO = 1045;
     }
 }
