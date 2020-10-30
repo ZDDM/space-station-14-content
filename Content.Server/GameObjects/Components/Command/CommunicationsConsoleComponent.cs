@@ -1,15 +1,20 @@
 ﻿#nullable enable
+using System;
 using Content.Server.GameObjects.Components.Power.ApcNetComponents;
 using Content.Server.GameObjects.EntitySystems;
 using Content.Server.Utility;
 using Content.Shared.GameObjects.Components.Command;
+using Content.Shared.Interfaces;
 using Content.Shared.Interfaces.GameObjects.Components;
 using Robust.Server.GameObjects.Components.UserInterface;
 using Robust.Server.Interfaces.GameObjects;
 using Robust.Server.Interfaces.Player;
 using Robust.Shared.GameObjects;
+using Robust.Shared.GameObjects.Systems;
 using Robust.Shared.Interfaces.GameObjects;
+using Robust.Shared.Interfaces.Timing;
 using Robust.Shared.IoC;
+using Robust.Shared.Localization;
 using Robust.Shared.ViewVariables;
 
 namespace Content.Server.GameObjects.Components.Command
@@ -19,12 +24,17 @@ namespace Content.Server.GameObjects.Components.Command
     public class CommunicationsConsoleComponent : SharedCommunicationsConsoleComponent, IActivate
     {
         [Dependency] private readonly IEntitySystemManager _entitySystemManager = default!;
+        [Dependency] private readonly IGameTiming _gameTiming = default!;
+
 
         private bool Powered => !Owner.TryGetComponent(out PowerReceiverComponent? receiver) || receiver.Powered;
 
         private RoundEndSystem RoundEndSystem => _entitySystemManager.GetEntitySystem<RoundEndSystem>();
 
         [ViewVariables] private BoundUserInterface? UserInterface => Owner.GetUIOrNull(CommunicationsConsoleUiKey.Key);
+
+        private TimeSpan _lastAnnouncement = TimeSpan.Zero;
+        private TimeSpan _announcementCooldown = TimeSpan.FromSeconds(10);
 
         public override void Initialize()
         {
@@ -47,6 +57,8 @@ namespace Content.Server.GameObjects.Components.Command
 
         private void UserInterfaceOnOnReceiveMessage(ServerBoundUserInterfaceMessage obj)
         {
+            var player = obj.Session;
+
             switch (obj.Message)
             {
                 case CommunicationsConsoleCallEmergencyShuttleMessage _:
@@ -55,6 +67,27 @@ namespace Content.Server.GameObjects.Components.Command
 
                 case CommunicationsConsoleRecallEmergencyShuttleMessage _:
                     RoundEndSystem.CancelRoundEndCountdown();
+                    break;
+
+                case CommunicationsConsoleAnnouncementMessage announcement:
+                    if (_gameTiming.CurTime < (_lastAnnouncement + _announcementCooldown))
+                    {
+                        player.AttachedEntity?.PopupMessageCursor(Loc.GetString("The announcements system is still recharging."));
+                        break;
+                    }
+
+                    var grid = Owner.Transform.GridID;
+
+                    if (!grid.IsValid())
+                    {
+                        player.AttachedEntity?.PopupMessageCursor(Loc.GetString("The communications console can't establish a connection!"));
+                        break;
+                    }
+
+                    _lastAnnouncement = _gameTiming.CurTime;
+
+                    EntitySystem.Get<AnnouncementSystem>().Announce(Loc.GetString("Priority Announcement"), announcement.Text, grid);
+
                     break;
             }
         }

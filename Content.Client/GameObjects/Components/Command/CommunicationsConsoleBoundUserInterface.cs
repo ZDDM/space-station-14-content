@@ -54,6 +54,11 @@ namespace Content.Client.GameObjects.Components.Command
             SendMessage(new CommunicationsConsoleRecallEmergencyShuttleMessage());
         }
 
+        public void SendAnnouncement(string text)
+        {
+            SendMessage(new CommunicationsConsoleAnnouncementMessage(text));
+        }
+
         protected override void UpdateState(BoundUserInterfaceState state)
         {
             if (!(state is CommunicationsConsoleInterfaceState commsState))
@@ -71,6 +76,11 @@ namespace Content.Client.GameObjects.Components.Command
             if (!disposing) return;
 
             _menu?.Dispose();
+        }
+
+        public void AnnouncementButtonPressed()
+        {
+            SendAnnouncement("cock");
         }
     }
 }

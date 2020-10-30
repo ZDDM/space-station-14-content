@@ -17,6 +17,7 @@ namespace Content.Client.Command
         private CommunicationsConsoleBoundUserInterface Owner { get; set; }
         private readonly CancellationTokenSource _timerCancelTokenSource = new CancellationTokenSource();
         private readonly Button _emergencyShuttleButton;
+        private readonly Button _announcementButton;
         private readonly RichTextLabel _countdownLabel;
 
         public CommunicationsConsoleMenu(CommunicationsConsoleBoundUserInterface owner)
@@ -30,10 +31,14 @@ namespace Content.Client.Command
             _emergencyShuttleButton = new Button();
             _emergencyShuttleButton.OnPressed += (e) => Owner.EmergencyShuttleButtonPressed();
 
+            _announcementButton = new Button() {Name = Loc.GetString("Send priority announcement")};
+            _announcementButton.OnPressed += (e) => Owner.AnnouncementButtonPressed();
+
             var vbox = new VBoxContainer() {SizeFlagsHorizontal = SizeFlags.FillExpand, SizeFlagsVertical = SizeFlags.FillExpand};
 
             vbox.AddChild(_countdownLabel);
             vbox.AddChild(_emergencyShuttleButton);
+            vbox.AddChild(_announcementButton);
 
             var hbox = new HBoxContainer() {SizeFlagsHorizontal = SizeFlags.FillExpand, SizeFlagsVertical = SizeFlags.FillExpand};
             hbox.AddChild(new Control(){CustomMinimumSize = new Vector2(100,0), SizeFlagsHorizontal = SizeFlags.FillExpand});

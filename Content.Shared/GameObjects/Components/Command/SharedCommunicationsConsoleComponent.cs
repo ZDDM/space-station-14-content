@@ -8,7 +8,6 @@ namespace Content.Shared.GameObjects.Components.Command
     public class SharedCommunicationsConsoleComponent : Component
     {
         public override string Name => "CommunicationsConsole";
-
     }
 
     [Serializable, NetSerializable]
@@ -38,6 +37,17 @@ namespace Content.Shared.GameObjects.Components.Command
     {
         public CommunicationsConsoleRecallEmergencyShuttleMessage()
         {
+        }
+    }
+
+    [NetSerializable, Serializable]
+    public class CommunicationsConsoleAnnouncementMessage : BoundUserInterfaceMessage
+    {
+        public string Text { get; }
+
+        public CommunicationsConsoleAnnouncementMessage(string text)
+        {
+            Text = text;
         }
     }
 
