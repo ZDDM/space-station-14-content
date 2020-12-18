@@ -6,7 +6,7 @@
   density: 7700
   electricResistivity: 6.9e-7
   thermalConductivity: 18
-  specificHeat: 500
+  specificHeat: 333
 
 - type: material
   id: glass
