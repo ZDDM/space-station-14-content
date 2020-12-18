@@ -3,7 +3,7 @@
   name: steel
   color: gray
   icon: Objects/Materials/sheets.rsi/metal.png
-  density: 7700
+  density: 1421
   electricResistivity: 6.9e-7
   thermalConductivity: 18
   specificHeat: 333
