@@ -14,7 +14,7 @@
   color: '#e8f0ff33'
   icon: Objects/Materials/sheets.rsi/glass.png
   density: 2500
-  electricResistivity: 1.0e+13
+  electricResistivity: 1.0e+12
   thermalConductivity: 0.9
   specificHeat: 840
 
